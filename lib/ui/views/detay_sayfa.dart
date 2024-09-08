@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:to_do_app/ui/cubit/detay_sayfa_cubit.dart';
 import 'package:to_do_app/ui/renkler.dart';
 import '../../data/entity/todos.dart';
 
@@ -22,11 +23,6 @@ class _DetaySayfaState extends State<DetaySayfa> {
     tfName.text = toDo.name;
   }
 
-  Future<void> guncelle(int id, String name) async {
-    if (kDebugMode) {
-      print("Güncelle : $id - $name");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +54,7 @@ class _DetaySayfaState extends State<DetaySayfa> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  guncelle(widget.toDos.id, tfName.text);
+                  context.read<DetaySayfaCubit>().guncelle(widget.toDos.id, tfName.text);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: renk3),
                 child: Text(
