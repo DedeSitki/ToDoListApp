@@ -1,40 +1,48 @@
-import 'package:flutter/foundation.dart';
+import 'package:to_do_app/sqlite/veritani_yardimcisi.dart';
 import '../entity/todos.dart';
 
 //DAO database access object
 class ToDoRepository {
   Future<void> kaydet(String name) async {
-    if (kDebugMode) {
-      print("kaydedildi : $name");
-    }
+    var db = await VeritabaniYardimcisi.veritabaniErisim();
+    var yeniToDo = Map<String, dynamic>();
+    yeniToDo["name"] = name;
+    await db.insert("toDo", yeniToDo);
   }
 
   Future<void> guncelle(int id, String name) async {
-    if (kDebugMode) {
-      print("Güncelle : $id - $name");
-    }
+    var db = await VeritabaniYardimcisi.veritabaniErisim();
+    var guncellenenToDo = Map<String, dynamic>();
+    guncellenenToDo["name"] = name;
+    await db.update("toDo", guncellenenToDo, where: "id=?", whereArgs: [id]);
   }
 
   Future<List<ToDos>> toDosYukle() async {
-    var toDosListesi = <ToDos>[];
-    var toDo1 = ToDos(id: 1, name: "Spor");
-    var toDo2 = ToDos(id: 2, name: "Yemek");
-    var toDo3 = ToDos(id: 3, name: "Alişveriş");
-    toDosListesi.add(toDo1);
-    toDosListesi.add(toDo2);
-    toDosListesi.add(toDo3);
-    return toDosListesi;
+    var db = await VeritabaniYardimcisi.veritabaniErisim();
+    //dynamic belli değil int string olabilir.
+    List<Map<String, dynamic>> maps = await db.rawQuery("SELECT * FROM toDo");
+    return List.generate(maps.length, (index) {
+      var satir = maps[index];
+      var id = satir["id"];
+      var name = satir["name"];
+      return ToDos(id: id, name: name);
+    });
   }
 
   Future<List<ToDos>> ara(String aramaKelimesi) async {
-    var toDosListesi = <ToDos>[];
-    var toDo1 = ToDos(id: 1, name: "Spor");
-    toDosListesi.add(toDo1);
-
-    return toDosListesi;
+    var db = await VeritabaniYardimcisi.veritabaniErisim();
+    List<Map<String, dynamic>> maps = await db
+        .rawQuery("SELECT * FROM toDo WHERE NAME LIKE '$aramaKelimesi%'");
+    return List.generate(maps.length, (index) {
+      var satir = maps[index];
+      var id = satir["id"];
+      var name = satir["name"];
+      return ToDos(id: id, name: name);
+    });
   }
 
   Future<void> sil(int id) async {
-    print("Sil : $id");
+    var db = await VeritabaniYardimcisi.veritabaniErisim();
+    await db.delete("toDo", where: "id = ?", whereArgs: [id]);
   }
 }

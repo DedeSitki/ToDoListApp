@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grock/grock.dart';
 import 'package:to_do_app/ui/cubit/anasayfa_cubit.dart';
 import 'package:to_do_app/ui/renkler.dart';
 import 'package:to_do_app/ui/views/detay_sayfa.dart';
@@ -35,9 +34,12 @@ class _AnasayfaState extends State<Anasayfa> {
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Grock.to(const KayitSayfa());
-          context.read<AnasayfaCubit>().toDosYukle();
+        onPressed: ()  {
+          Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const KayitSayfa()))
+              .then((value) {
+            context.read<AnasayfaCubit>().toDosYukle();
+          });
         },
         backgroundColor: renk3,
         child: const Icon(Icons.add),
@@ -63,8 +65,11 @@ class _AnasayfaState extends State<Anasayfa> {
                         var toDo = toDosListesi[index];
                         return GestureDetector(
                           onTap: () {
-                            Grock.to(DetaySayfa(toDos: toDo));
-                            context.read<AnasayfaCubit>().toDosYukle();
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) =>  DetaySayfa(toDos: toDo)))
+                                  .then((value) {
+                                context.read<AnasayfaCubit>().toDosYukle();
+                              });
                           },
                           child: Card(
                               child: Row(
